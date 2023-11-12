@@ -1,5 +1,5 @@
-﻿#include <iostream>
-#include <vector>
+﻿#include <vector>﻿
+#include <iostream>
 
 using namespace std;
 
@@ -7,13 +7,7 @@ using namespace std;
 struct pos {
 	int x;
 	int y;
-	const char* nl[8] {"a","b","c","d","e","f","g","h" };
-};
-struct chBoard{	
-	vector <chf> chBoard;
-	void record(chf f){
-		chBoard.push_back(f);
-	}
+	char nl[8]{ 'a','b','c','d','e','f','g','h' };
 };
 class chf {
 public:
@@ -22,19 +16,26 @@ public:
 		p.y = y;
 		col = c;
 	}
+	vector <chf> chBoard;
+	void record(chf f) {
+		chBoard.push_back(f);
+	}
 	bool col;
+	char tf[6]{ ' ', 'N', 'B', 'R', 'Q', 'K' };
+	int tfi=0;
+	//chfsBoard board;
 	pos p;
-	chBoard board;
 	vector<pos> pm;
 	void cpm() {
 		for (int i = 0; i < pm.size(); i++) {
-			cout << p.nl[pm.at(i).x-1] << pm.at(i).y << ";" << endl;
+			cout <<tf[tfi]<< p.nl[p.x-1]<<p.y<<"-" << p.nl[pm.at(i).x - 1] << pm.at(i).y << ";" << endl;
 		}
 	};
 };
+
 class Pawn : public chf {
 public:
-	Pawn(int x, int y, bool c) :chf(x, y, c) {};
+	Pawn(int x, int y, bool c) :chf(x, y, c) { tfi = 0; };
 	void fpm() {
 		pos a;
 		a.x = p.x;
@@ -42,7 +43,7 @@ public:
 			a.y = p.y + 1;
 			if (a.y < 9) pm.push_back(a);
 			if (p.y == 2) {
-				a.x = p.y + 2;
+				a.y = p.y + 2;
 				pm.push_back(a);
 			}
 		}
@@ -50,42 +51,41 @@ public:
 			a.y = p.y - 1;
 			if (a.y > 0) pm.push_back(a);
 			if (p.y == 7) {
-				a.x = p.y - 2;
+				a.y = p.y - 2;
 				pm.push_back(a);
 			}
 		}
-		for (int j = 0; j < board.chBoard.size(); j++) {
+		for (int j = 0; j < chBoard.size(); j++) {
 			for (int i = 0; i < pm.size(); i++) {
-				if (pm.at(i).x == board.chBoard.at(j).p.x && pm.at(i).y == board.chBoard.at(j).p.y) {
+				if (pm.at(i).x ==chBoard.at(j).p.x && pm.at(i).y == chBoard.at(j).p.y) {
 					pm.erase(pm.begin() + i);
 				}
 				for (int k = -1; k < 2; k += 2) {
 					if (col) {
-						if (pm.at(i).x + k == board.chBoard.at(j).p.x && col != board.chBoard.at(i).col && pm.at(i).y + 1 == board.chBoard.at(j).p.y) {
+						if (pm.at(i).x + k == chBoard.at(j).p.x && col != chBoard.at(i).col && pm.at(i).y + 1 == chBoard.at(j).p.y) {
 							a.x = p.x + k;
 							a.y = p.y + 1;
 							pm.push_back(a);
 						}
-						else {
-							if (pm.at(i).x + k == board.chBoard.at(j).p.x && col != board.chBoard.at(i).col && pm.at(i).y - 1 == board.chBoard.at(j).p.y) {
+					} else {
+						if (pm.at(i).x + k == chBoard.at(j).p.x && col != chBoard.at(i).col && pm.at(i).y - 1 == chBoard.at(j).p.y) {
 								a.x = p.x + k;
 								a.y = p.y - 1;
 								pm.push_back(a);
-							}
 						}
 					}
 				}
 			}
 		}
-	};
+	}
 };
-class Knight:public chf {
+class Knight :public chf {
 public:
-	Knight(int x, int y, bool c) : chf(x, y, c) {};
+	Knight(int x, int y, bool c) : chf(x, y, c) { tfi = 1; };
 	void fpm() {
 		pos a;
-		for (int i = -1; i < 2; i+=2) {
-			for (int j = -1; j < 2; j+=2) {
+		for (int i = -1; i < 2; i += 2) {
+			for (int j = -1; j < 2; j += 2) {
 				a.x = p.x + 1 * i;
 				a.y = p.y + 2 * j;
 				if (a.x > 0 && a.x < 9 && a.y > 0 && a.y < 9) pm.push_back(a);
@@ -95,8 +95,8 @@ public:
 			}
 		}
 		for (int i = 0; i < pm.size(); i++) {
-			for (int j = 0; j < board.chBoard.size(); j++) {
-				if (pm.at(i).x == board.chBoard.at(j).p.x && pm.at(i).y == board.chBoard.at(j).p.y && col == board.chBoard.at(i).col) {
+			for (int j = 0; j < chBoard.size(); j++) {
+				if (pm.at(i).x == chBoard.at(j).p.x && pm.at(i).y == chBoard.at(j).p.y && col == chBoard.at(i).col) {
 					pm.erase(pm.begin() + i);
 				}
 			}
@@ -105,7 +105,7 @@ public:
 };
 class Bishop : public chf {
 public:
-	Bishop(int x, int y, bool c) :chf(x, y, c) {};
+	Bishop(int x, int y, bool c) :chf(x, y, c) { tfi = 3; };
 	void fpm() {
 		pos a;
 		for (int i = 1; i < 9; i++) {
@@ -123,30 +123,33 @@ public:
 			if (a.x > 0 && a.y < 9) pm.push_back(a);
 		}
 		for (int i = 0; i < pm.size(); i++) {
-			for (int j = 0; j < board.chBoard.size(); j++) {
-				if (pm.at(i).x == board.chBoard.at(j).p.x && pm.at(i).y == board.chBoard.at(j).p.y && col == board.chBoard.at(i).col) {
-					pm.erase(pm.begin() + i);
-					if (pm.at(i).x < board.chBoard.at(j).p.x && pm.at(i).y < board.chBoard.at(j).p.y) {
+			for (int j = 0; j < chBoard.size(); j++) {
+				if (pm.at(i).x == chBoard.at(j).p.x && pm.at(i).y == chBoard.at(j).p.y) {
+					if(col == chBoard.at(i).col)pm.erase(pm.begin() + i);
+					if (pm.at(i).x < chBoard.at(j).p.x && pm.at(i).y < chBoard.at(j).p.y) {
 						for (int ii = 0; ii < pm.size(); ii++) {
-							if (pm.at(ii).x > board.chBoard.at(j).p.x && pm.at(ii).y > board.chBoard.at(j).p.y) {
+							if (pm.at(ii).x > chBoard.at(j).p.x && pm.at(ii).y > chBoard.at(j).p.y) {
 								pm.erase(pm.begin() + i);
 							}
 						}
-					}else if (pm.at(i).x < board.chBoard.at(j).p.x && pm.at(i).y > board.chBoard.at(j).p.y) {
+					}
+					else if (pm.at(i).x < chBoard.at(j).p.x && pm.at(i).y > chBoard.at(j).p.y) {
 						for (int ii = 0; ii < pm.size(); ii++) {
-							if (pm.at(ii).x > board.chBoard.at(j).p.x && pm.at(ii).y < board.chBoard.at(j).p.y) {
+							if (pm.at(ii).x > chBoard.at(j).p.x && pm.at(ii).y < chBoard.at(j).p.y) {
 								pm.erase(pm.begin() + i);
 							}
 						}
-					}else if (pm.at(i).x > board.chBoard.at(j).p.x && pm.at(i).y > board.chBoard.at(j).p.y) {
+					}
+					else if (pm.at(i).x > chBoard.at(j).p.x && pm.at(i).y > chBoard.at(j).p.y) {
 						for (int ii = 0; ii < pm.size(); ii++) {
-							if (pm.at(ii).x < board.chBoard.at(j).p.x && pm.at(ii).y < board.chBoard.at(j).p.y) {
+							if (pm.at(ii).x < chBoard.at(j).p.x && pm.at(ii).y < chBoard.at(j).p.y) {
 								pm.erase(pm.begin() + i);
 							}
 						}
-					}else if (pm.at(i).x > board.chBoard.at(j).p.x && pm.at(i).y < board.chBoard.at(j).p.y) {
+					}
+					else if (pm.at(i).x > chBoard.at(j).p.x && pm.at(i).y < chBoard.at(j).p.y) {
 						for (int ii = 0; ii < pm.size(); ii++) {
-							if (pm.at(ii).x < board.chBoard.at(j).p.x && pm.at(ii).y > board.chBoard.at(j).p.y) {
+							if (pm.at(ii).x < chBoard.at(j).p.x && pm.at(ii).y > chBoard.at(j).p.y) {
 								pm.erase(pm.begin() + i);
 							}
 						}
@@ -158,7 +161,7 @@ public:
 };
 class Rook : public chf {
 public:
-	Rook(int x, int y, bool c) :chf(x, y, c) {};
+	Rook(int x, int y, bool c) :chf(x, y, c) { tfi = 4; };
 	void fpm() {
 		pos a;
 		for (int i = 1; i < 9; i++) {
@@ -170,33 +173,33 @@ public:
 			if (a.y != p.y) pm.push_back(a);
 		}
 		for (int i = 0; i < pm.size(); i++) {
-			for (int j = 0; j < board.chBoard.size(); j++) {
-				if (pm.at(i).x == board.chBoard.at(j).p.x && pm.at(i).y == board.chBoard.at(j).p.y && col == board.chBoard.at(i).col) {
-					pm.erase(pm.begin() + i);
-					if (pm.at(i).x < board.chBoard.at(j).p.x) {
+			for (int j = 0; j < chBoard.size(); j++) {
+				if (pm.at(i).x == chBoard.at(j).p.x && pm.at(i).y == chBoard.at(j).p.y) {
+					if (col == chBoard.at(i).col)pm.erase(pm.begin() + i);
+					if (pm.at(i).x < chBoard.at(j).p.x) {
 						for (int ii = 0; ii < pm.size(); ii++) {
-							if (pm.at(ii).x > board.chBoard.at(j).p.x) {
+							if (pm.at(ii).x > chBoard.at(j).p.x) {
 								pm.erase(pm.begin() + i);
 							}
 						}
 					}
-					else if (pm.at(i).y > board.chBoard.at(j).p.y) {
+					else if (pm.at(i).y > chBoard.at(j).p.y) {
 						for (int ii = 0; ii < pm.size(); ii++) {
-							if (pm.at(ii).y < board.chBoard.at(j).p.y) {
+							if (pm.at(ii).y < chBoard.at(j).p.y) {
 								pm.erase(pm.begin() + i);
 							}
 						}
 					}
-					else if (pm.at(i).x > board.chBoard.at(j).p.x) {
+					else if (pm.at(i).x > chBoard.at(j).p.x) {
 						for (int ii = 0; ii < pm.size(); ii++) {
-							if (pm.at(ii).x < board.chBoard.at(j).p.x) {
+							if (pm.at(ii).x < chBoard.at(j).p.x) {
 								pm.erase(pm.begin() + i);
 							}
 						}
 					}
-					else if (pm.at(i).y < board.chBoard.at(j).p.y) {
+					else if (pm.at(i).y < chBoard.at(j).p.y) {
 						for (int ii = 0; ii < pm.size(); ii++) {
-							if (pm.at(ii).y > board.chBoard.at(j).p.y) {
+							if (pm.at(ii).y > chBoard.at(j).p.y) {
 								pm.erase(pm.begin() + i);
 							}
 						}
@@ -207,7 +210,7 @@ public:
 	}
 };
 class Queen : public chf {
-	Queen(int x, int y, bool c) : chf(x, y, c) {};
+	Queen(int x, int y, bool c) : chf(x, y, c) { tfi = 5; };
 	void fpm() {
 		pos a;
 		for (int i = 1; i < 9; i++) {
@@ -233,61 +236,61 @@ class Queen : public chf {
 			if (a.x > 0 && a.y < 9) pm.push_back(a);
 		}
 		for (int i = 0; i < pm.size(); i++) {
-			for (int j = 0; j < board.chBoard.size(); j++) {
-				if (pm.at(i).x == board.chBoard.at(j).p.x && pm.at(i).y == board.chBoard.at(j).p.y && col == board.chBoard.at(i).col) {
-					pm.erase(pm.begin() + i);
-					if (pm.at(i).x < board.chBoard.at(j).p.x && pm.at(i).y < board.chBoard.at(j).p.y) {
+			for (int j = 0; j < chBoard.size(); j++) {
+				if (pm.at(i).x == chBoard.at(j).p.x && pm.at(i).y == chBoard.at(j).p.y) {
+					if (col == chBoard.at(i).col)pm.erase(pm.begin() + i);
+					if (pm.at(i).x < chBoard.at(j).p.x && pm.at(i).y < chBoard.at(j).p.y) {
 						for (int ii = 0; ii < pm.size(); ii++) {
-							if (pm.at(ii).x > board.chBoard.at(j).p.x && pm.at(ii).y > board.chBoard.at(j).p.y) {
+							if (pm.at(ii).x > chBoard.at(j).p.x && pm.at(ii).y > chBoard.at(j).p.y) {
 								pm.erase(pm.begin() + i);
 							}
 						}
 					}
-					else if (pm.at(i).x < board.chBoard.at(j).p.x && pm.at(i).y > board.chBoard.at(j).p.y) {
+					else if (pm.at(i).x < chBoard.at(j).p.x && pm.at(i).y > chBoard.at(j).p.y) {
 						for (int ii = 0; ii < pm.size(); ii++) {
-							if (pm.at(ii).x > board.chBoard.at(j).p.x && pm.at(ii).y < board.chBoard.at(j).p.y) {
+							if (pm.at(ii).x > chBoard.at(j).p.x && pm.at(ii).y < chBoard.at(j).p.y) {
 								pm.erase(pm.begin() + i);
 							}
 						}
 					}
-					else if (pm.at(i).x > board.chBoard.at(j).p.x && pm.at(i).y > board.chBoard.at(j).p.y) {
+					else if (pm.at(i).x > chBoard.at(j).p.x && pm.at(i).y > chBoard.at(j).p.y) {
 						for (int ii = 0; ii < pm.size(); ii++) {
-							if (pm.at(ii).x < board.chBoard.at(j).p.x && pm.at(ii).y < board.chBoard.at(j).p.y) {
+							if (pm.at(ii).x < chBoard.at(j).p.x && pm.at(ii).y < chBoard.at(j).p.y) {
 								pm.erase(pm.begin() + i);
 							}
 						}
 					}
-					else if (pm.at(i).x > board.chBoard.at(j).p.x && pm.at(i).y < board.chBoard.at(j).p.y) {
+					else if (pm.at(i).x > chBoard.at(j).p.x && pm.at(i).y < chBoard.at(j).p.y) {
 						for (int ii = 0; ii < pm.size(); ii++) {
-							if (pm.at(ii).x < board.chBoard.at(j).p.x && pm.at(ii).y > board.chBoard.at(j).p.y) {
+							if (pm.at(ii).x < chBoard.at(j).p.x && pm.at(ii).y > chBoard.at(j).p.y) {
 								pm.erase(pm.begin() + i);
 							}
 						}
 					}
-					else if (pm.at(i).x < board.chBoard.at(j).p.x && pm.at(i).y == board.chBoard.at(j).p.y) {
+					else if (pm.at(i).x < chBoard.at(j).p.x && pm.at(i).y == chBoard.at(j).p.y) {
 						for (int ii = 0; ii < pm.size(); ii++) {
-							if (pm.at(ii).x > board.chBoard.at(j).p.x && pm.at(i).y == board.chBoard.at(j).p.y) {
+							if (pm.at(ii).x > chBoard.at(j).p.x && pm.at(i).y == chBoard.at(j).p.y) {
 								pm.erase(pm.begin() + i);
 							}
 						}
 					}
-					else if (pm.at(i).y > board.chBoard.at(j).p.y && pm.at(i).x == board.chBoard.at(j).p.x) {
+					else if (pm.at(i).y > chBoard.at(j).p.y && pm.at(i).x == chBoard.at(j).p.x) {
 						for (int ii = 0; ii < pm.size(); ii++) {
-							if (pm.at(ii).y < board.chBoard.at(j).p.y && pm.at(i).x == board.chBoard.at(j).p.x) {
+							if (pm.at(ii).y < chBoard.at(j).p.y && pm.at(i).x == chBoard.at(j).p.x) {
 								pm.erase(pm.begin() + i);
 							}
 						}
 					}
-					else if (pm.at(i).x > board.chBoard.at(j).p.x && pm.at(i).y == board.chBoard.at(j).p.y) {
+					else if (pm.at(i).x > chBoard.at(j).p.x && pm.at(i).y == chBoard.at(j).p.y) {
 						for (int ii = 0; ii < pm.size(); ii++) {
-							if (pm.at(ii).x < board.chBoard.at(j).p.x && pm.at(i).y == board.chBoard.at(j).p.y) {
+							if (pm.at(ii).x < chBoard.at(j).p.x && pm.at(i).y == chBoard.at(j).p.y) {
 								pm.erase(pm.begin() + i);
 							}
 						}
 					}
-					else if (pm.at(i).y < board.chBoard.at(j).p.y && pm.at(i).x == board.chBoard.at(j).p.x) {
+					else if (pm.at(i).y < chBoard.at(j).p.y && pm.at(i).x == chBoard.at(j).p.x) {
 						for (int ii = 0; ii < pm.size(); ii++) {
-							if (pm.at(ii).y > board.chBoard.at(j).p.y && pm.at(i).x == board.chBoard.at(j).p.x) {
+							if (pm.at(ii).y > chBoard.at(j).p.y && pm.at(i).x == chBoard.at(j).p.x) {
 								pm.erase(pm.begin() + i);
 							}
 						}
@@ -298,19 +301,19 @@ class Queen : public chf {
 	}
 };
 class King : public chf {
-	King(int x, int y, bool c) : chf(x, y, c) {};
+	King(int x, int y, bool c) : chf(x, y, c) { tfi = 6; };
 	void fpm() {
 		pos a;
 		for (int i = -1; i < 2; i++) {
 			for (int j = -1; j < 2; j++) {
 				a.x = p.x + i;
 				a.y = p.y + j;
-				if ( a.x != 0 && a.y != 0 ) pm.push_back(a);
+				if (!(i == 0 && j == 0)) pm.push_back(a);
 			}
 		}
 		for (int i = 0; i < pm.size(); i++) {
-			for (int j = 0; j < board.chBoard.size(); j++) {
-				if (pm.at(i).x == board.chBoard.at(j).p.x && pm.at(i).y == board.chBoard.at(j).p.y && col == board.chBoard.at(i).col) {
+			for (int j = 0; j < chBoard.size(); j++) {
+				if (pm.at(i).x == chBoard.at(j).p.x && pm.at(i).y == chBoard.at(j).p.y && col == chBoard.at(i).col) {
 					pm.erase(pm.begin() + i);
 				}
 			}
@@ -318,22 +321,21 @@ class King : public chf {
 	}
 };
 int main() {
-
 	Pawn pawn(4, 2, true);
-	pawn.board.record(pawn);
+	pawn.record(pawn);
 	pawn.fpm();
-	cout << "pawn:" << endl;
 	pawn.cpm();
-	Knight knight(2, 1,true);
+	Knight knight(2, 1, true);
+	knight.record(knight);
 	knight.fpm();
-	cout << "knight:" << endl;
 	knight.cpm();
-	Bishop bishop(3, 1,true);
+	Bishop bishop(3, 1, true);
+	bishop.record(bishop);
 	bishop.fpm();
-	cout << "bishop:" << endl;
 	bishop.cpm();
-	Rook rook(1, 1,true);
+	Rook rook(1, 1, true);
+	rook.record(rook);
 	rook.fpm();
-	cout << "rook:" << endl;
 	rook.cpm();
+
 }
